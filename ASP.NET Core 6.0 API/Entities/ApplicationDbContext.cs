@@ -19,6 +19,9 @@ namespace ASP.NET_Core_6._0_API.Entities
         public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; } = null!;
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } = null!;
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; } = null!;
+        public virtual DbSet<Book> Books { get; set; } = null!;
+        public virtual DbSet<Language> Languages { get; set; } = null!;
+        public virtual DbSet<Publisher> Publishers { get; set; } = null!;
 
 
 
@@ -103,6 +106,45 @@ namespace ASP.NET_Core_6._0_API.Entities
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserTokens)
                     .HasForeignKey(d => d.UserId);
+            });
+
+            modelBuilder.Entity<Book>(entity =>
+            {
+                entity.ToTable("Book");
+
+                entity.Property(e => e.Isbn)
+                    .HasMaxLength(150)
+                    .HasColumnName("ISBN");
+
+                entity.Property(e => e.Name).HasMaxLength(150);
+
+                entity.Property(e => e.PublishDate).HasColumnType("datetime");
+
+
+
+                entity.HasOne(d => d.Publisher)
+                    .WithMany(p => p.Books)
+                    .HasForeignKey(d => d.PublisherId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Book_Publisher");
+            });
+
+            modelBuilder.Entity<Language>(entity =>
+            {
+                entity.ToTable("Language");
+
+                entity.Property(e => e.Name).HasMaxLength(150);
+            });
+
+            modelBuilder.Entity<Publisher>(entity =>
+            {
+                entity.ToTable("Publisher");
+
+                entity.Property(e => e.Birthday).HasColumnType("datetime");
+
+                entity.Property(e => e.FirstName).HasMaxLength(150);
+
+                entity.Property(e => e.LastName).HasMaxLength(150);
             });
 
             OnModelCreatingPartial(modelBuilder);
